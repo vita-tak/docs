@@ -1,0 +1,41 @@
+---
+title: "Overview"
+description: "How autoLog() works and what it supports."
+---
+
+## What is autoLog()?
+
+`autoLog()` is the core function of `@vita-tak/ai-logger`. It wraps an AI client and automatically logs every inference call — without requiring any changes to your existing code logic.
+
+Every logged call is cryptographically stamped on the Minima blockchain, giving you a tamper-proof audit trail for EU AI Act compliance.
+
+## How it works
+
+`autoLog()` uses a pattern called function wrapping. It replaces the internal create function of your AI client with its own version that does the same thing — but copies the result on the way through.
+```
+Without autoLog:   Your code → OpenAI → response
+With autoLog:      Your code → autoLog → OpenAI → response copied to backend → response returned
+```
+
+Your code receives the response as normal. The logging happens asynchronously in the background and never blocks your application.
+
+## Implementation methods
+
+Depending on your setup, autoLog() is used in two different ways:
+
+| Method | Use case |
+|--------|----------|
+| `autoLog(client)` | Direct OpenAI or Anthropic client |
+| `autoLog.langchain()` | LangChain chains and agents |
+
+<CardGroup cols={2}>
+  <Card title="OpenAI" icon="plug" href="/autolog/openai">
+    Wrap an OpenAI client — auto-detected, minimal setup.
+  </Card>
+  <Card title="Anthropic" icon="plug" href="/autolog/anthropic">
+    Wrap an Anthropic client — auto-detected, minimal setup.
+  </Card>
+  <Card title="LangChain" icon="link" href="/autolog/langchain">
+    Multi-agent pipelines via LangChain's callback system.
+  </Card>
+</CardGroup>

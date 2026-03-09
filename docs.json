@@ -15,6 +15,15 @@
           {
             "group": "Getting Started",
             "pages": ["index", "quickstart"]
+          },
+          {
+              "group": "autoLog()",
+              "pages": [
+                "autolog/overview",
+                "autolog/openai",
+                "autolog/anthropic",
+                "autolog/langchain"
+            ]
           }
         ]
       }
