@@ -1,32 +1,38 @@
 ---
 title: "Overview"
-description: "How autoLog() works and what it supports."
+description: "autoLog() wraps your existing AI client like a transparent layer. Your code keeps working exactly as before — logging happens silently in the background"
 ---
 
-## What is autoLog()?
+## How autoLog() works
 
-`autoLog()` is the core function of `@vita-tak/ai-logger`. It wraps an AI client and automatically logs every inference call — without requiring any changes to your existing code logic.
+autoLog() is framework-agnostic. It does not care whether your application is built with Express, Next.js, a CLI tool, or a plain script. The only thing that matters is three steps:
 
-Every logged call is cryptographically stamped on the Minima blockchain, giving you a tamper-proof audit trail for EU AI Act compliance.
+<Steps>
+  <Step title="Create a provider client">
+    Instantiate your OpenAI or Anthropic client as normal.
+  </Step>
+  <Step title="Wrap it with autoLog()">
+    Pass the client to `aiLogger.autoLog(client)` — this is the only change needed.
+  </Step>
+  <Step title="Use the wrapped variable for all AI calls">
+    Use `client` instead of your original instance. Every call through it is automatically logged and blockchain-stamped.
+  </Step>
+</Steps>
 
-## How it works
+## Supported providers at the moment
 
-`autoLog()` uses a pattern called function wrapping. It replaces the internal create function of your AI client with its own version that does the same thing — but copies the result on the way through.
-```
-Without autoLog:   Your code → OpenAI → response
-With autoLog:      Your code → autoLog → OpenAI → response copied to backend → response returned
-```
+| Provider  | Method           | Status         |
+|-----------|------------------|----------------|
+| OpenAI    | autoLog(client)  | Auto-detected  |
+| Anthropic | autoLog(client)  | Auto-detected  |
 
-Your code receives the response as normal. The logging happens asynchronously in the background and never blocks your application.
+## Works with AI agents too
 
-## Implementation methods
+autoLog() works equally well with AI agents and multi-step orchestration systems — as long as the underlying OpenAI or Anthropic client is wrapped with autoLog(). Every call the agent makes, regardless of which tool or step triggers it, will be captured and logged automatically.
 
-Depending on your setup, autoLog() is used in two different ways:
-
-| Method | Use case |
-|--------|----------|
-| `autoLog(client)` | Direct OpenAI or Anthropic client |
-| `autoLog.langchain()` | LangChain chains and agents |
+<Note>
+  This applies to custom-built agents and simple orchestration logic. Frameworks that manage their own internal AI client instances (such as LangChain) require a separate integration.
+</Note>
 
 <CardGroup cols={2}>
   <Card title="OpenAI" icon="plug" href="/autolog/openai">
