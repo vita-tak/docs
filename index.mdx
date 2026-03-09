@@ -1,97 +1,49 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "@vita-tak/ai-logger"
+description: "Automatic AI compliance logging, stamped on the Minima blockchain."
 ---
 
-## Setting up
+## What is this?
 
-Get your documentation site up and running in minutes.
+`@vita-tak/ai-logger` is an SDK that lets you add automatic AI compliance logging to your application in minutes. Every AI call gets logged and cryptographically stamped on the Minima blockchain — giving you a tamper-proof audit trail for EU AI Act compliance.
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+`autoLog()` wraps your existing AI client like a transparent layer. Your code keeps working exactly as before — logging happens silently in the background.
 
-## Make it yours
+## How autoLog() works
 
-Design a docs site that looks great and empowers your users.
+autoLog() is framework-agnostic. It does not care whether your application is built with Express, Next.js, a CLI tool, or a plain script. The only thing that matters is three steps:
 
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
-  </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+<Steps>
+  <Step title="Create a provider client">
+    Instantiate your OpenAI or Anthropic client as normal.
+  </Step>
+  <Step title="Wrap it with autoLog()">
+    Pass the client to `aiLogger.autoLog(client)` — this is the only change needed.
+  </Step>
+  <Step title="Use the wrapped variable for all AI calls">
+    Use `client` instead of your original instance. Every call through it is automatically logged and blockchain-stamped.
+  </Step>
+</Steps>
 
-## Create beautiful pages
+<Info>
+  Think of autoLog() as a checkpoint at a door — not the building itself. It does not matter what the surrounding code looks like. As long as every AI call passes through the wrapped client, it will be captured and logged.
+</Info>
 
-Everything you need to create world-class documentation.
+## Supported providers at the moment
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+| Provider  | Method           | Status         |
+|-----------|------------------|----------------|
+| OpenAI    | autoLog(client)  | Auto-detected  |
+| Anthropic | autoLog(client)  | Auto-detected  |
 
-## Need inspiration?
+## Works with AI agents too
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
+autoLog() works equally well with AI agents and multi-step orchestration systems — as long as the underlying OpenAI or Anthropic client is wrapped with autoLog(). Every call the agent makes, regardless of which tool or step triggers it, will be captured and logged automatically.
+
+<Note>
+  This applies to custom-built agents and simple orchestration logic. Frameworks that manage their own internal AI client instances (such as LangChain) require a separate integration.
+</Note>
+
+<Card title="Get started" icon="rocket" href="/quickstart">
+  Follow the quick start guide to integrate in minutes.
 </Card>
