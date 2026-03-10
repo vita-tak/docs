@@ -8,13 +8,20 @@ description: "Set up ai-logger in three steps."
 npm install @vita-tak/ai-logger
 ```
 
-## Step 2 — Initialize the logger
+## Step 2 — Run the init command
+
+Run the following command in your project root to set up the SDK:
+```bash
+npx ai-logger init
+```
+This creates a local `.ai-logger` folder and `.ai-logger.config.json` file in your project where event logs, validation reports and configurations are stored.
+
+## Step 3 — Initialize the logger
 ```typescript
 import { AILogger } from '@vita-tak/ai-logger'
-import OpenAI from 'openai'
 
 const aiLogger = new AILogger({
-  apiKey: process.env.INTEGRITAS_API_KEY,
   systemId: 'your-system-name',
 })
 ```
+Creates an `AILogger` instance with a unique `systemId` — this is the name that identifies your AI system in the dashboard and in generated reports. You only need to do this once per application.

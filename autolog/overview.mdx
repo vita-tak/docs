@@ -1,47 +1,21 @@
 ---
 title: "Overview"
-description: "autoLog() wraps your existing AI client like a transparent layer. Your code keeps working exactly as before — logging happens silently in the background"
+description: "How autoLog() works and what it supports."
 ---
 
-## How autoLog() works
+## What is Auto Log?
 
-autoLog() is framework-agnostic. It does not care whether your application is built with Express, Next.js, a CLI tool, or a plain script. The only thing that matters is three steps:
+`autoLog()` is the core function of `@vita-tak/ai-logger`. It wraps an AI client and automatically logs every inference call — without requiring any changes to your existing code logic.
 
-<Steps>
-  <Step title="Create a provider client">
-    Instantiate your OpenAI or Anthropic client as normal.
-  </Step>
-  <Step title="Wrap it with autoLog()">
-    Pass the client to `aiLogger.autoLog(client)` — this is the only change needed.
-  </Step>
-  <Step title="Use the wrapped variable for all AI calls">
-    Use `client` instead of your original instance. Every call through it is automatically logged and blockchain-stamped.
-  </Step>
-</Steps>
+Every logged call is cryptographically stamped, secured and verified on the Minima blockchain, giving you a tamper-proof audit trail, tailored for EU AI Act compliance.
 
-## Supported providers at the moment
-
-| Provider  | Method           | Status         |
-|-----------|------------------|----------------|
-| OpenAI    | autoLog(client)  | Auto-detected  |
-| Anthropic | autoLog(client)  | Auto-detected  |
-
-## Works with AI agents too
-
-autoLog() works equally well with AI agents and multi-step orchestration systems — as long as the underlying OpenAI or Anthropic client is wrapped with autoLog(). Every call the agent makes, regardless of which tool or step triggers it, will be captured and logged automatically.
-
-<Note>
-  This applies to custom-built agents and simple orchestration logic. Frameworks that manage their own internal AI client instances (such as LangChain) require a separate integration.
-</Note>
+Your code receives the response as normal. The logging happens asynchronously in the background and never blocks your application.
 
 <CardGroup cols={2}>
-  <Card title="OpenAI" icon="plug" href="/autolog/openai">
-    Wrap an OpenAI client — auto-detected, minimal setup.
-  </Card>
-  <Card title="Anthropic" icon="plug" href="/autolog/anthropic">
-    Wrap an Anthropic client — auto-detected, minimal setup.
+  <Card title="Direct Clients" icon="plug" href="/autolog/direct-clients">
+    OpenAI and Anthropic — auto-detected, minimal setup.
   </Card>
   <Card title="LangChain" icon="link" href="/autolog/langchain">
-    Multi-agent pipelines via LangChain's callback system.
+    Support for multi-agent pipelines via LangChain.
   </Card>
 </CardGroup>

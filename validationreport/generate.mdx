@@ -1,0 +1,50 @@
+---
+title: "Generate a Report"
+description: "Generate a blockchain-verified PDF compliance report for your AI system."
+---
+
+## Overview
+
+The `generate-report` command fetches all logged inferences for a given system, generates a PDF report, and stamps it on the Minima blockchain — giving you tamper-proof compliance evidence in one command.
+
+## Usage
+```bash
+# Using system name
+npx ai-logger generate-report --system openai-test-bot
+
+# Using system ID
+npx ai-logger generate-report --system cmlusk2020000uxybwjnmdeil
+
+# With custom output folder
+npx ai-logger generate-report --system openai-test-bot --output ./reports/
+```
+
+## Flags
+
+| Flag | Required | Default | Description |
+|------|----------|---------|-------------|
+| `--system` | ✅ Yes | — | System name or ID |
+| `--output` | No | `./ai-logger/` | Folder to save the report |
+
+## What happens when you run it
+```
+⦸ Fetching logs from database...
+⦸ Generating PDF...
+⦸ Stamping on Minima blockchain...
+✓ Report saved to ./ai-logger/openai-test-bot-2026-02-20.pdf
+
+Transaction ID: 0xabc123...
+Block: #48291
+```
+
+The report is saved as `systemname-YYYY-MM-DD.pdf` in the output folder. The output folder is created automatically if it does not exist.
+
+<Warning>
+  Make sure you have run `npx ai-logger init` and that your `.ai-logger.config.json` is present in the project root before running this command.
+</Warning>
+
+## Don't know your system name?
+
+<Card title="List systems" icon="list" href="/validationreport/list-systems">
+  Run list-systems to find your system name or ID.
+</Card>
