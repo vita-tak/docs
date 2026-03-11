@@ -4,9 +4,9 @@ title: "Security Overview"
 
 ## Encrypted at the source
 
-Every inference runs two parallel security operations locally before anything leaves your application — input is hashed with **SHA-3** for blockchain verification, and both input and output are encrypted with **AES-256-GCM** before being transmitted. The backend only ever stores hashes and ciphertext.
+Every inference runs two parallel security operations locally before anything leaves your application — raw input/output is hashed with **SHA-3** for blockchain verification, and both are also encrypted with **AES-256-GCM** before being transmitted. The backend only ever stores hashes and ciphertext.
 
-This means sensitive data is never exposed to the backend, aligning with GDPR's requirements for appropriate technical measures to protect personal data.
+This means sensitive data is never exposed to the backend.
 
 <CardGroup cols={2}>
   <Card icon="circle-check" iconType="solid" color="#16a34a">Privacy by design</Card>
