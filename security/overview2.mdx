@@ -1,0 +1,73 @@
+---
+title: "Security Overview"
+description: "How @vita-tak/ai-logger protects your data."
+---
+
+## Overview
+
+Every inference logged by `@vita-tak/ai-logger` runs two parallel security operations locally — before anything leaves your application. The backend never sees your raw input or output at any point.
+```
+Your application
+        ↓
+autoLog() intercepts the response
+        ↓
+① SHA-3 hash of input     → sent to backend → stamped on Minima blockchain
+② AES-256-GCM encryption  → ciphertext sent to backend → stored in database
+        ↓
+Raw plaintext never transmitted
+```
+
+## Hashing
+
+Input is hashed locally using **SHA-3 (SHA3-256)** before anything is sent to the backend. The hash acts as a unique fingerprint of the content — it proves what was sent without revealing the actual data.
+
+The hash is what gets stamped on the Minima blockchain via Integritas, creating a tamper-proof record that can be verified at any time.
+
+<Info>
+  Hashing is a one-way operation. It is mathematically impossible to reconstruct the original input from its hash.
+</Info>
+
+## Encryption
+
+Both input and output are encrypted locally using **AES-256-GCM** — the same standard used in banking and financial systems — before being transmitted to the backend.
+
+Each inference uses a unique initialization vector (IV), meaning no two encrypted logs look the same even if the content is identical. The GCM authentication tag ensures that stored ciphertext cannot be silently tampered with — if it is modified, decryption will fail.
+
+| Property | Detail |
+|----------|--------|
+| Algorithm | AES-256-GCM |
+| Key size | 256 bits |
+| IV | 12 bytes, unique per inference |
+| Auth tag | 16 bytes — integrity check |
+
+## What the backend stores
+
+The backend never receives or stores plaintext. Here is what is stored per inference:
+
+| Field | Description |
+|-------|-------------|
+| `inputHash` | SHA-3 hash of raw input — used for blockchain verification |
+| `outputHash` | SHA-3 hash of raw output — used for blockchain verification |
+| `encInput` | AES-256-GCM encrypted input — ciphertext, IV, auth tag |
+| `encOutput` | AES-256-GCM encrypted output — ciphertext, IV, auth tag |
+| `metadata` | Model, provider, timestamp, token count |
+| `blockchainReceipt` | Transaction ID, block number, block date |
+
+## Decryption
+
+Decryption happens locally via the CLI at audit time — the decryption key never reaches the backend.
+```
+npx ai-logger generate-report --system your-system-name
+        ↓
+CLI fetches encrypted logs from backend
+        ↓
+CLI decrypts locally
+        ↓
+CLI verifies: SHA-3(decrypted input) === inputHash on blockchain
+        ↓
+✓ Tamper-proof audit report generated
+```
+
+<Info>
+  The hash verification step is critical — it proves to the auditor that the decrypted content is exactly what was stamped on the blockchain. A hash mismatch means the data has been tampered with.
+</Info>

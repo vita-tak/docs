@@ -1,0 +1,107 @@
+---
+title: "Backend"
+description: "API endpoints, database schema, and blockchain integration."
+---
+
+## Overview
+
+The backend is a NestJS API that receives logs from the SDK, stores them in PostgreSQL, and stamps them on the Minima blockchain via the Integritas v2 API.
+
+| Technology | Role |
+|------------|------|
+| NestJS | API framework |
+| PostgreSQL | Log storage |
+| Prisma | Database ORM |
+| Integritas v2 | Blockchain stamping |
+| pg-boss | Job queue for async blockchain stamping |
+
+## API Endpoints
+
+### Logging
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/logs/inference` | Receive and store an inference log from the SDK |
+| `POST` | `/api/logs/training` | Receive and store a training log |
+| `POST` | `/api/logs/deployment` | Receive and store a deployment log |
+
+### Reports
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/api/reports/generate` | Generate PDF → hash → stamp on blockchain → return PDF |
+
+### Verification
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET` | `/api/verify/:txHash` | Verify a blockchain stamp via Integritas |
+
+## Database Schema
+
+The database uses separate tables for each event type rather than a single generic log table.
+```
+AISystem
+  ├── PredictionLog    (inference calls)
+  ├── TrainingLog      (model training events)
+  ├── DeploymentLog    (deployment events)
+  └── Report           (generated PDF reports)
+
+IntegritasLog          (all blockchain interactions)
+  ├── ← PredictionLog
+  ├── ← TrainingLog
+  ├── ← DeploymentLog
+  └── ← Report
+```
+
+<Info>
+  Every log type has a `stampId` pointing to `IntegritasLog`. All blockchain receipts are collected in one place — making it easy to query all stamps without searching across multiple tables.
+</Info>
+
+## Blockchain Integration
+
+Logs and reports are stamped on the Minima blockchain through the Integritas v2 API.
+
+**Base URL:** `https://integritas.minima.global/core/v2`
+
+**Authentication:** `x-api-key` header
+
+### Stamping flow
+```
+Backend receives log
+        ↓
+SHA-3 hash generated
+        ↓
+POST /v2/timestamp/post  →  { blockNumber, blockDate, transactionId }
+        ↓
+IntegritasLog created in database
+        ↓
+✓ Tamper-proof blockchain receipt stored
+```
+
+### Async stamping with pg-boss
+
+Blockchain stamping runs asynchronously via a pg-boss job queue — the HTTP endpoint returns immediately without waiting for blockchain confirmation.
+```
+SDK sends log  →  backend stores log  →  returns 200 immediately
+                        ↓
+                  pg-boss queues stamp job
+                        ↓
+                  background worker stamps on Minima
+                        ↓
+                  IntegritasLog updated with receipt
+```
+
+<Info>
+  pg-boss uses the existing PostgreSQL database — no additional infrastructure required. Jobs survive server restarts and are guaranteed to be processed exactly once.
+</Info>
+
+## Authentication
+
+All SDK and CLI requests are authenticated via an API key passed in the `x-api-key` header.
+```typescript
+// All requests from SDK and CLI include:
+headers: {
+  'x-api-key': 'your-api-key'
+}
+```

@@ -1,0 +1,46 @@
+---
+title: "Visibility"
+description: "Control what appears in your PDF compliance reports"
+---
+
+## What is visibility?
+
+By default, AI Logger includes both the raw input (the prompt sent to the AI) and the raw output (the AI's response) in your PDF reports.
+
+Visibility settings let you control which of these appear in the report — useful if you want to share reports with others without exposing sensitive prompts or responses.
+
+## Set visibility
+
+Run the following command in your project directory:
+```bash
+npx ai-logger set visibility
+```
+
+You'll see an interactive checklist:
+```
+? What should be visible in PDF reports?
+❯ ◉ Input (the prompt sent to the AI)
+  ◯ Output (the AI response)
+```
+
+Use **space** to toggle and **enter** to save.
+
+## Config format
+
+Your selection is saved to `.ai-logger.config.json`:
+```json
+{
+  "visibility": {
+    "showInput": true,
+    "showOutput": false
+  }
+}
+```
+
+## Default behavior
+
+If you never run `set visibility`, both input and output are shown in reports. This is the safest default — you can always restrict visibility later.
+
+<Note>
+  Visibility only affects what is **rendered in the PDF**. All data remains encrypted in the database regardless of this setting.
+</Note>

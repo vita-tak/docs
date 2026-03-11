@@ -1,7 +1,7 @@
 {
   "$schema": "https://mintlify.com/docs.json",
   "theme": "mint",
-  "name": "AI Logger SDK",
+  "name": "@vita-tak/ai-logger",
   "colors": {
     "primary": "#4F8EF7",
     "light": "#78B4FF",
@@ -10,11 +10,11 @@
   "navigation": {
     "tabs": [
       {
-        "tab": "Usage guide",
+        "tab": "Usage Guide",
         "groups": [
           {
             "group": "Getting Started",
-            "pages": ["setup"]
+            "pages": ["overview", "setup"]
           },
           {
             "group": "Auto Log",
@@ -29,7 +29,14 @@
             "group": "Validation Report",
             "pages": [
               "validationreport/overview",
-              "validationreport/generate"
+              "validationreport/generate",
+              "validationreport/visibility"
+            ]
+          },
+          {
+            "group": "Security",
+            "pages": [
+              "security/overview"
             ]
           }
         ]

@@ -1,0 +1,100 @@
+---
+title: "SDK"
+description: "How the SDK works under the hood."
+---
+
+## Overview
+
+The SDK is a TypeScript NPM package installed in the user's application. It has two independent parts:
+
+| Part | How it's used |
+|------|--------------|
+| Programmatic API | Imported in code — `import { AILogger } from '@vita-tak/ai-logger'` |
+| CLI | Run in the terminal — `npx ai-logger generate-report` |
+
+## How autoLog() works
+
+`autoLog()` uses a pattern called **function wrapping**. It replaces the internal `create` function of the AI client with its own version that does the same thing — but copies the response on the way through.
+```typescript
+function autoLog(client) {
+  // 1. Save reference to the original function
+  const originalCreate = client.chat.completions.create.bind(client.chat.completions)
+
+  // 2. Replace it with a wrapped version
+  client.chat.completions.create = async (params) => {
+    // 3. Hash sensitive input locally — never leaves the user's machine
+    const inputHash = sha3Hash(JSON.stringify(params.messages))
+
+    // 4. Let the real call go through as normal
+    const response = await originalCreate(params)
+
+    // 5. Send a copy to the backend asynchronously — never blocks the user
+    fetch('https://your-backend/api/logs/inference', {
+      method: 'POST',
+      headers: { 'x-api-key': apiKey },
+      body: JSON.stringify({ inputHash, provider, rawResponse: response })
+    }).catch(() => {}) // Fail silently
+
+    // 6. Return the response to the user — they notice nothing
+    return response
+  }
+
+  return client
+}
+```
+
+<Info>
+  The logging `fetch` call runs without `await` and with a silent `.catch()`. A failure in the logging pipeline never affects the user's application or response time.
+</Info>
+
+## Provider auto-detection
+
+The SDK detects the provider automatically from the client's class name — no manual configuration needed in most cases.
+```typescript
+function detectProvider(client) {
+  const name = client.constructor.name.toLowerCase()
+
+  if (name.includes('openai'))    return 'openai'
+  if (name.includes('anthropic')) return 'anthropic'
+
+  throw new Error(
+    `Unknown AI client: "${client.constructor.name}". ` +
+    `Specify provider manually: autoLog(client, 'provider-name')`
+  )
+}
+```
+
+| Client | Detected as |
+|--------|-------------|
+| `new OpenAI()` | `openai` — auto-detected |
+| `new Anthropic()` | `anthropic` — auto-detected |
+| Unknown client | Manual override required: `autoLog(client, 'mistral')` |
+
+## Input hashing
+
+Sensitive input is hashed locally with SHA-3 before being sent to the backend. The plaintext never leaves the user's machine.
+```
+User's machine:   input → SHA3-256 → hash  →  sent to backend
+                  input stays here, never transmitted
+```
+
+## CLI
+
+The CLI is a thin shell — it does not generate PDFs or stamp blockchains itself. It reads the local config file and calls the backend which handles everything.
+```
+npx ai-logger <command>
+        ↓
+Reads .ai-logger.config.json
+        ↓
+Calls backend API
+        ↓
+Displays result in terminal
+```
+
+### Available commands
+
+| Command | Description |
+|---------|-------------|
+| `init` | Creates `.ai-logger.config.json` with API key and backend URL |
+| `generate-report` | Generates a blockchain-verified PDF compliance report |
+| `list-systems` | Lists all registered AI systems |

@@ -1,0 +1,66 @@
+---
+title: "Architecture Overview"
+description: "How @vita-tak/ai-logger is built and how the pieces fit together."
+---
+
+## System Overview
+
+`@vita-tak/ai-logger` consists of three independent parts that work together:
+
+| Component | Technology | Role |
+|-----------|------------|------|
+| SDK | TypeScript / NPM | Installed in the user's application — wraps AI clients and sends logs |
+| Backend | NestJS / PostgreSQL | Receives logs, generates reports, stamps on blockchain |
+| CLI | TypeScript / Commander.js | Terminal interface for generating reports and managing systems |
+
+## How a logged inference flows through the system
+```
+User's application
+        ↓
+SDK — autoLog() intercepts the AI call
+        ↓
+AI provider (OpenAI / Anthropic) — call goes through as normal
+        ↓
+SDK — copies the response and sends it to the backend asynchronously
+        ↓
+Backend — stores the log in PostgreSQL
+        ↓
+Backend — hashes the log with SHA-3 and stamps it on Minima via Integritas API
+        ↓
+✓ Tamper-proof log stored and blockchain-verified
+```
+
+## How a validation report is generated
+```
+User runs: npx ai-logger generate-report --system my-system
+        ↓
+CLI reads .ai-logger.config.json for API key and backend URL
+        ↓
+CLI calls backend: POST /api/reports/generate
+        ↓
+Backend fetches logs → generates PDF → hashes PDF → stamps on Minima blockchain
+        ↓
+CLI receives PDF binary and saves to ./ai-logger/my-system-YYYY-MM-DD.pdf
+        ↓
+✓ Blockchain-verified compliance report ready
+```
+
+## Key design decisions
+
+**SDK sends the full raw response**
+The SDK does not extract or transform data before sending it to the backend. The entire raw API response is forwarded — this makes the design future-proof and means no extraction logic needs to change when providers update their response format.
+
+**Logging is asynchronous and non-blocking**
+The `fetch` call to the backend runs without `await` and with a silent `.catch()`. This means a failure in the logging pipeline never affects the user's application or response time.
+
+**Blockchain stamping via Integritas**
+Logs and reports are stamped on the Minima blockchain through the Integritas v2 API. Each stamp produces a transaction ID, block number, and block date — stored in the database and included in generated reports.
+
+<CardGroup cols={2}>
+  <Card title="SDK" icon="cube" href="/technical/sdk">
+    How autoLog() works under the hood.
+  </Card>
+  <Card title="Backend" icon="server" href="/technical/backend">
+    API endpoints, database schema, and blockchain integration.
+  </Card>
+</CardGroup>

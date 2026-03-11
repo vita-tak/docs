@@ -9,7 +9,9 @@ description: "How autoLog() works and what it supports."
 
 Every logged call is cryptographically stamped, secured and verified on the Minima blockchain, giving you a tamper-proof audit trail, tailored for EU AI Act compliance.
 
-Your code receives the response as normal. The logging happens asynchronously in the background and never blocks your application.
+<Note>
+  Raw input and output never leave your application. The backend never sees the original content. See: [Security Overview](/security/overview)
+</Note>
 
 <CardGroup cols={2}>
   <Card title="Direct Clients" icon="plug" href="/autolog/direct-clients">

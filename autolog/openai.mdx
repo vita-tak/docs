@@ -12,7 +12,7 @@ autoLog() is framework-agnostic. It does not care whether your application is bu
     Instantiate your OpenAI client as normal.
   </Step>
   <Step title="Wrap it with autoLog()">
-    Pass the client to `aiLogger.autoLog(client)` — this is the only change needed.
+    Pass the client to `aiLogger.autoLog(openai)` — this is the only change needed.
   </Step>
   <Step title="Use the wrapped variable for all AI calls">
     Use `client` instead of your original instance. Every call through is automatically logged, secured and verified.
@@ -23,14 +23,15 @@ autoLog() is framework-agnostic. It does not care whether your application is bu
 ```typescript
 import { AILogger } from '@vita-tak/ai-logger'
 import OpenAI from 'openai'
-const openai = new OpenAI({
-    apiKey: process.env.OPENAI_API_KEY,
-  });
 
-// Step 1
 const aiLogger = new AILogger({
   systemId: 'your-system-name',
 });
+
+// Step 1
+const openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
 
 // Step 2
 const client = aiLogger.autoLog(openai);
@@ -42,9 +43,9 @@ const response = await client.chat.completions.create({
 });
 ```
 
-<Warning>
-  Always use the wrapped `client` variable for your calls — not the original `openai` instance. Calls made through the unwrapped instance will not be logged.
-</Warning>
+<Note>
+    Always use the wrapped `client` variable for your calls — not the original `openai` instance. Calls made through the unwrapped instance will not be logged.
+</Note>
 
 ## Works with any setup
 

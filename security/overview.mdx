@@ -1,0 +1,25 @@
+---
+title: "Security Overview"
+---
+
+## Encrypted at the source
+
+Every inference runs two parallel security operations locally before anything leaves your application — input is hashed with **SHA-3** for blockchain verification, and both input and output are encrypted with **AES-256-GCM** before being transmitted. The backend only ever stores hashes and ciphertext.
+
+This means sensitive data is never exposed to the backend, aligning with GDPR's requirements for appropriate technical measures to protect personal data.
+
+<CardGroup cols={2}>
+  <Card icon="circle-check" iconType="solid" color="#16a34a">Privacy by design</Card>
+  <Card icon="circle-check" iconType="solid" color="#16a34a">GDPR compliant logs</Card>
+</CardGroup>
+
+## Blockchain verification
+
+Every log is hashed, stamped and verified on the Minima blockchain via Integritas. Once verification is confirmed, the receipt is stored in the backend and used as the basis for generated validation reports.
+
+This creates an immutable, tamper-proof log trail that exists independently of the backend and can be independently verified at any time.
+
+<CardGroup cols={2}>
+  <Card icon="circle-check" iconType="solid" color="#16a34a">Verified tamper-proof logs</Card>
+  <Card icon="circle-check" iconType="solid" color="#16a34a">Independently verifiable reports</Card>
+</CardGroup>
