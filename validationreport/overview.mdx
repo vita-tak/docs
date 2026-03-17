@@ -9,24 +9,9 @@ A validation report is a blockchain-verified PDF document that summarises all lo
 
 ## What the report contains
 
-- **Summary** — model name, provider, environment, and total number of inferences
+- **Summary of logs**
 - **Per-inference entries** — input, output, metadata, and a blockchain verification link for each call
 - **Blockchain receipt** — transaction ID, block number, and timestamp of the stamp
-
-## How it works
-
-The entire report is generated and stamped via the CLI. The flow looks like this:
-```
-npx ai-logger generate-report --system your-system-name
-        ↓
-CLI fetches logs from the backend
-        ↓
-Backend generates PDF → hashes it with SHA-3 → stamps hash on Minima blockchain
-        ↓
-Report saved to ./ai-logger/your-system-name-YYYY-MM-DD.pdf
-        ↓
-✓ Blockchain-verified compliance report ready
-```
 
 <Info>
   The report is stamped on the Minima blockchain via Integritas. Anyone with the PDF can verify its authenticity — the hash will either be a full match or no match.
